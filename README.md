@@ -9,7 +9,7 @@ This is streamlit application built on python, which converts alteryx yxmd file 
 2. Navigate to the folder where these files resides in the terminal and if you dont have streamlit installed run this command - 
 pip install streamlit
 
-3. Run your application by below command in terminal - 
+3. Run your application by running this command in terminal - 
 streamlit run Main.py
 
 4. you can find the application running in your local and test it out
