@@ -3,7 +3,7 @@ name: Streamlit Deployment
 on:
   push:
     branches:
-      - main  # Change this to your main branch name
+      - main 
 
 jobs:
   build:
@@ -16,10 +16,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'  # Specify your Python version
+          python-version: '3.x' 
 
       - name: Install dependencies
         run: pip install -r requirements.txt
 
       - name: Run Streamlit app
-        run: streamlit run Main.py  # Replace 'app.py' with your Streamlit app file
+        run: streamlit run Main.py  
