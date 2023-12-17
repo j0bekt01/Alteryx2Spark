@@ -6,10 +6,10 @@ This is streamlit application built on python, which converts alteryx yxmd file 
 
 1. Copy Main.py and Node.py files to your local desktop/ PC and open it in VS code or any other application
 
-2. Navigate to the folder where these files resides in the terminal and do if you dont have streamlit installed
+2. Navigate to the folder where these files resides in the terminal and if you dont have streamlit installed run this command - 
 pip install streamlit
 
-3. Run your application by below command in terminal
+3. Run your application by below command in terminal - 
 streamlit run Main.py
 
 4. you can find the application running in your local and test it out
