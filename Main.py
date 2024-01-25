@@ -15,14 +15,16 @@ def process_yxmd(file_content):
          node = NodeElement(x, tree)
          lst.append(node.data)
          graph.add_node(node.data['Tool ID'])
-     mst=[]
-     for node in nx.algorithms.topological_sort(graph):
-        mst = mst + ([d for d in lst if int(d.get('Tool ID')) == int(node)])
-
+     
      for connection in tree.find('Connections').findall('Connection'):
         origin_tool_id = connection.find('Origin').attrib['ToolID']
         destination_tool_id = connection.find('Destination').attrib['ToolID']
         graph.add_edge(origin_tool_id, destination_tool_id)
+
+     mst=[]
+     for node in nx.algorithms.topological_sort(graph):
+        mst = mst + ([d for d in lst if int(d.get('Tool ID')) == int(node)])
+          
      processed_data = mst 
      return processed_data,graph
 
