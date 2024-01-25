@@ -31,7 +31,7 @@ class NodeElement(object):
             for field in rjoin_data.findall('Field'):
                 self.rjoin_fields.append(field.attrib['field'])
                 rj = rj + "," + field.attrib['field']
-            join_type = ljoin_data.attrib.get('connection', 'inner').lower()
+            join_type = "inner"
             joinstr =""
             for i in range(0,len(self.ljoin_fields)) :
                 joinstr=joinstr+"ldfs(\""+self.ljoin_fields[i] + "\")===rdfs(\""+self.rjoin_fields[i]+ "\"),"
