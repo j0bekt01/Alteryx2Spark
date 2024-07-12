@@ -38,7 +38,7 @@ class NodeElement(object):
                 
 
             self.query = "select * from " + lj + rj
-            self.sparkquery = "val df" + self.tool_id + " = ldfs.join(rdfs," + joinstr[:-1] + f",{join_type})"
+            self.sparkquery = "df" + self.tool_id + " = ldfs.join(rdfs," + joinstr[:-1] + f",{join_type})"
 
         
 
@@ -64,7 +64,7 @@ class NodeElement(object):
                     aggregations.append(f'sum(\"{field["field"]}\").alias(\"{field["rename"]}\")')
             group_by_clause = ', '.join(group_by)
             aggregation_clause = ', '.join(aggregations)
-            self.sparkquery = f"val df{self.tool_id} = df.groupBy({', '.join(group_by)}).agg({', '.join(aggregations)})"
+            self.sparkquery = f"df{self.tool_id} = df.groupBy({', '.join(group_by)}).agg({', '.join(aggregations)})"
 
 
 
@@ -86,7 +86,7 @@ class NodeElement(object):
                         self.query =self.query+ e['field'] +","
                         self.sparkquery = self.sparkquery + "\"" + e['field']+ "\""  +","
 
-            self.sparkquery = "val df"+self.tool_id+" = df.selectExpr(" + self.sparkquery[:-1] + ")"
+            self.sparkquery = "df"+self.tool_id+" = df.selectExpr(" + self.sparkquery[:-1] + ")"
 
 
         
@@ -108,7 +108,7 @@ class NodeElement(object):
                 else:
                     filt = filt + ".withColumn(\"" + e['field']+"\",lit("+e['expression'].replace('[','').replace(']','')  + "))"
 
-            self.sparkquery = "val df"+self.tool_id+" = df"+filt.replace('\n', ' ')
+            self.sparkquery = "df"+self.tool_id+" = df"+filt.replace('\n', ' ')
 
         # else:
         #     self.select_fields = None
@@ -127,7 +127,7 @@ class NodeElement(object):
             #     else:
             #         filt = filt + ".withColumn(" + e['field']+",lit("+e['expression'] + "))"
 
-            self.sparkquery = "val df"+self.tool_id+" = df"+filt
+            self.sparkquery = "df"+self.tool_id+" = df"+filt
 
         # else:
         #     self.select_fields = None
@@ -142,13 +142,13 @@ class NodeElement(object):
             for e in self.unique_fields:
                 self.sparkquery = self.sparkquery + "\"" + e['field']+ "\""  +","
 
-            self.sparkquery = "val df"+self.tool_id+" = df.dropDuplicates(" + self.sparkquery[:-1] + ")"
+            self.sparkquery = "df"+self.tool_id+" = df.dropDuplicates(" + self.sparkquery[:-1] + ")"
 
         # else:
         #     self.select_fields = None
         elif self.plugin == 'AlteryxBasePluginsGui.Union.Union':
 
-            self.sparkquery = "val df"+self.tool_id+" = ldfs.UnionByName(rdfs)"
+            self.sparkquery = "df"+self.tool_id+" = ldfs.UnionByName(rdfs)"
 
 
         elif self.plugin == 'AlteryxBasePluginsGui.Sort.Sort':
@@ -165,7 +165,7 @@ class NodeElement(object):
                     self.sparkquery = self.sparkquery + "desc(\"" + e['field']+ "\")"  +","
 
 
-            self.sparkquery = "val df"+self.tool_id+" = df.orderBy(" + self.sparkquery[:-1] + ")"
+            self.sparkquery = "df"+self.tool_id+" = df.orderBy(" + self.sparkquery[:-1] + ")"
 
 
         elif self.plugin == 'AlteryxBasePluginsGui.Filter.Filter':
@@ -175,7 +175,7 @@ class NodeElement(object):
                 .find('DefaultAnnotationText').text
             
             cond = self.filter_fields.replace('[','').replace(']','').replace(' = ',' == ').replace('"','\'')
-            self.sparkquery = "val df"+self.tool_id+" = df.where(\"" +cond+  "\")"
+            self.sparkquery = "df"+self.tool_id+" = df.where(\"" +cond+  "\")"
 
         # else:
         #     self.select_fields = None
@@ -193,18 +193,18 @@ class NodeElement(object):
             if self.filter_fields is not None:
                 file_content = self.filter_fields.text
                 query = file_content.split('|||')[1] if '|||' in file_content else ''
-                self.sparkquery = f'val df{self.tool_id} = spark.read.format("jdbc").option("url", "jdbc:odbc:DSN=PROJECT_SQL").option("dbtable", "{query}").load()'
+                self.sparkquery = f'df{self.tool_id} = spark.read.format("jdbc").option("url", "jdbc:odbc:DSN=PROJECT_SQL").option("dbtable", "{query}").load()'
             else:
-                self.sparkquery = f'val df{self.tool_id} = spark.read.format("jdbc").load()'
+                self.sparkquery = f'df{self.tool_id} = spark.read.format("jdbc").load()'
 
 
         elif self.plugin == 'AlteryxBasePluginsGui.TextInput.TextInput':
-            self.sparkquery = f'val df{self.tool_id} = spark.read.format("text").load()'
+            self.sparkquery = f'df{self.tool_id} = spark.read.format("text").load()'
 
 
         
         elif self.plugin == 'AlteryxBasePluginsGui.BrowseV2.BrowseV2':
-            self.sparkquery = "val df"+self.tool_id +".show()"
+            self.sparkquery = "df"+self.tool_id +".show()"
 
 
 
@@ -220,9 +220,9 @@ class NodeElement(object):
                     for m in field.text.split(","):
                         if(m.endswith("True") and c==0):
                             self.deltaquery = self.deltaquery+"\""+m.split("=")[0] +"\","
-                    self.sparkquery = "val df"+self.tool_id +"_new=ldfs.as(\"a\").join(rdfs.as(\"b\"), Seq("  +  self.deltaquery[:-1] +"),\"left anti\")\n"
-                    self.sparkquery =  self.sparkquery  + "val df"+self.tool_id +"_delete=rdfs.as(\"a\").join(ldfs.as(\"b\"), Seq("  +  self.deltaquery[:-1] +"),\"left anti\")\n"
-                    self.sparkquery = self.sparkquery  + "\n val df"+self.tool_id +"_change=ldfs.as(\"a\").join(rdfs.as(\"b\"), Seq("  +  self.deltaquery[:-1] +"),\"inner\")"
+                    self.sparkquery = "df"+self.tool_id +"_new=ldfs.as(\"a\").join(rdfs.as(\"b\"), Seq("  +  self.deltaquery[:-1] +"),\"left anti\")\n"
+                    self.sparkquery =  self.sparkquery  + "df"+self.tool_id +"_delete=rdfs.as(\"a\").join(ldfs.as(\"b\"), Seq("  +  self.deltaquery[:-1] +"),\"left anti\")\n"
+                    self.sparkquery = self.sparkquery  + "\n df"+self.tool_id +"_change=ldfs.as(\"a\").join(rdfs.as(\"b\"), Seq("  +  self.deltaquery[:-1] +"),\"inner\")"
                     c=1
                 else:
                     self.deltaquery=""
@@ -246,7 +246,7 @@ class NodeElement(object):
 
 
         # if(self.sparkquery == ""):
-        #        self.sparkquery= "val df"+self.tool_id + "=df."
+        #        self.sparkquery= "df"+self.tool_id + "=df."
         # else:
         #         self.sparkquery
         
@@ -281,7 +281,7 @@ class NodeElement(object):
                      self.sparkquery = self.sparkquery.replace('rdfs', 'df'+origin) if self.sparkquery else None
                  if(origin):
                      if(self.sparkquery == ""):
-                        self.sparkquery= "val df"+self.tool_id + "=df."
+                        self.sparkquery= "df"+self.tool_id + "=df."
                      else:
                         self.sparkquery
                      self.sparkquery = self.sparkquery.replace('df.', 'df'+origin+'.') if self.sparkquery else None
